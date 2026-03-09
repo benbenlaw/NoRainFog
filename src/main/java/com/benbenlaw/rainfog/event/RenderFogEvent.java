@@ -19,8 +19,6 @@ public class RenderFogEvent {
             // Disable fog by extending fog distances so it's effectively invisible
             event.setNearPlaneDistance(0f);
             event.setFarPlaneDistance(100000f);
-
         }
     }
-
 }

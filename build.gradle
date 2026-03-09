@@ -5,7 +5,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.78'
+    id 'net.neoforged.moddev' version '2.0.140'
     id 'net.darkhax.curseforgegradle' version '1.1.24'
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -23,20 +23,24 @@ repositories {
             includeGroup("curse.maven")
         }
     }
+
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     runs {
         configureEach {
@@ -55,14 +59,14 @@ neoForge {
             programArgument '--nogui'
         }
 
-        serverData {
-            serverData()
+        clientData {
+            clientData()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
     }
 
     mods {
-        rainfog {
+        "${mod_id}" {
             sourceSet sourceSets.main
         }
     }
@@ -73,9 +77,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
 
     //JEI
-    //compileOnly "curse.maven:jei-238222:6617262"
-    //runtimeOnly "curse.maven:jei-238222:6617262"
-
+    implementation("mezz.jei:jei-${jei_mc_version}-neoforge:${jei_version}")
+    //BBL Core
+    implementation("curse.maven:bblcore-1135181:${core_version}")
 }
 
 tasks.withType(ProcessResources).configureEach {
@@ -136,13 +140,19 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
 
     apiToken = System.getenv("curseforge_token").toString()
 
-    def projectId = 1290594
+    def projectId = curseforge_id
     def mainFile = upload(projectId, jar)
 
     mainFile.changelog = changelog
-    mainFile.releaseType = "release"
-    mainFile.gameVersions.addAll(minecraft_version)
+    mainFile.releaseType = "${release_type}"
+
+    "${release_versions}".split(',').each {
+        mainFile.addGameVersion("${it}")
+    }
+
     mainFile.addModLoader("neoforge")
+    mainFile.addEnvironment("server", "client")
+
 }
 
 
@@ -150,16 +160,16 @@ tasks.getByName("modrinth").setGroup("modpublishing")
 
 modrinth {
     token = System.getenv("modrinth_token").toString()
-    projectId = "yuk2cAJ1"
-    versionType = "release"
-    versionName = "bbl-no-rain-fog-" + "$minecraft_version" + "-" + "$mod_version"
+    projectId = "${modrinth_id}"
+    versionType = "${release_type}"
+    versionName = "${mod_id}" + "$minecraft_version" + "-" + "$mod_version"
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
 
-    gameVersions.addAll(minecraft_version)
-
+    gameVersions = "${release_versions}".split(',').collect {e -> e}
     loaders = ["neoforge"]
     changelog = project.changelog
     dependencies {
         optional.project "jei"
     }
 }
+
