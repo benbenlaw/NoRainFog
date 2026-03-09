@@ -15,7 +15,7 @@ public class RenderFogEvent {
     @SubscribeEvent
     public static void onRenderFog(ViewportEvent.RenderFog event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.level.isRaining()) {
+        if (mc.level != null) {
             // Disable fog by extending fog distances so it's effectively invisible
             event.setNearPlaneDistance(0f);
             event.setFarPlaneDistance(100000f);
