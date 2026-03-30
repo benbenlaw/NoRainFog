@@ -1,21 +1,19 @@
-package com.benbenlaw.rainfog;
+package com.benbenlaw.nofog;
 
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(RainFog.MOD_ID)
-public class RainFog {
-    public static final String MOD_ID = "rainfog";
+@Mod(NoFog.MOD_ID)
+public class NoFog {
+    public static final String MOD_ID = "nofog";
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
-    public RainFog(final IEventBus eventBus, final ModContainer modContainer) {
+    public NoFog(final IEventBus eventBus, final ModContainer modContainer) {
 
     }
 }
